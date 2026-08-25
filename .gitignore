@@ -1,45 +1,67 @@
-# Virtual environment
-venv/
-.venv/
-env/
-ENV/
-
-# Environment variables / API keys
-.env
-.env.*
-!.env.example
-
-# Python cache
+# =========================
+# Python
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Jupyter
-.ipynb_checkpoints/
+# =========================
+# Virtual Environment
+# =========================
+.venv/
+venv/
+env/
+ENV/
 
-# VS Code
-.vscode/
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.*
+!.env.example
 
-# PyCharm
-.idea/
+# =========================
+# SQLite / Database
+# =========================
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
 
-# Distribution / build
-build/
-dist/
-*.egg-info/
-
-# Testing / coverage
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Logs
+# =========================
+# Streamlit
+# =========================
+.streamlit/
+streamlit.log
 *.log
 
-# OS files
+# =========================
+# LangGraph / Local State
+# =========================
+.freebuff/
+*.freebuff
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS
+# =========================
 .DS_Store
 Thumbs.db
 
-# Local model/cache files
-.cache/
-huggingface/
+# =========================
+# Python Packaging
+# =========================
+*.egg-info/
+dist/
+build/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/

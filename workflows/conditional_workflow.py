@@ -113,7 +113,7 @@ workflow = graph.compile()
 
 
 result = workflow.invoke({
-    "statement": "I am not very happy with my performance in my last project."
+    "statement": "I am  very happy with my performance in my last project."
 })
 
 
