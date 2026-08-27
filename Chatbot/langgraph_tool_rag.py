@@ -7,7 +7,22 @@ from typing import Annotated, Any, Dict, Optional, TypedDict
 
 from dotenv import load_dotenv
 from pathlib import Path
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+# Load .env from parent directory (local dev) — silently skip if missing (e.g. on Streamlit Cloud)
+_env_path = Path(__file__).resolve().parent.parent / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path)
+
+# On Streamlit Cloud, read from st.secrets if GOOGLE_API_KEY not yet set
+def _ensure_api_key():
+    if not os.environ.get("GOOGLE_API_KEY"):
+        try:
+            import streamlit as st
+            os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+        except Exception:
+            pass
+
+_ensure_api_key()
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.vectorstores import FAISS
@@ -20,7 +35,7 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 import requests
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 
 # -------------------
 # 1. LLM + embeddings
