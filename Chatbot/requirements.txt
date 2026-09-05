@@ -11,3 +11,4 @@ faiss-cpu
 pypdf
 requests
 ddgs
+langchain-mcp-adapters
