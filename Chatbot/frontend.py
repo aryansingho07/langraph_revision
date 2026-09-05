@@ -17,85 +17,132 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ============================================ Custom CSS ============================================
+# ============================================ Custom CSS (Premium theme) ============================
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
+
+    :root {
+        --bg-primary: #0b0d14;
+        --bg-secondary: #12141f;
+        --bg-elevated: #171a27;
+        --border-subtle: #262a3d;
+        --accent-primary: #7c6cf6;
+        --accent-secondary: #a78bfa;
+        --accent-gold: #e8b95f;
+        --text-primary: #eef0f7;
+        --text-secondary: #9096ab;
+        --text-muted: #5c6178;
+        --success: #4ade80;
+    }
+
+    html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+
     /* ---- App background ---- */
-    .stApp { background-color: #0e1117; }
+    .stApp {
+        background: radial-gradient(circle at 20% 0%, #161a2c 0%, #0b0d14 55%);
+    }
 
     /* ---- Sidebar ---- */
     section[data-testid="stSidebar"] {
-        background-color: #161b22;
-        border-right: 1px solid #30363d;
+        background: linear-gradient(180deg, #10121c 0%, #0c0e17 100%);
+        border-right: 1px solid var(--border-subtle);
     }
     section[data-testid="stSidebar"] .stButton > button {
         width: 100%;
-        border-radius: 8px;
-        border: 1px solid #30363d;
-        background-color: #21262d;
-        color: #c9d1d9;
-        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-subtle);
+        background-color: var(--bg-elevated);
+        color: var(--text-secondary);
+        padding: 0.55rem 1rem;
         text-align: left;
-        transition: background-color 0.2s;
+        font-weight: 500;
+        transition: all 0.2s ease;
     }
     section[data-testid="stSidebar"] .stButton > button:hover {
-        background-color: #30363d;
-        border-color: #58a6ff;
+        background: linear-gradient(135deg, rgba(124,108,246,0.18), rgba(167,139,250,0.10));
+        border-color: var(--accent-primary);
+        color: var(--text-primary);
+    }
+    section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, var(--accent-primary), #5b4bd6);
+        border: none;
+        color: #ffffff;
     }
 
     /* ---- Chat messages ---- */
     .stChatMessage {
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.5rem;
+        border-radius: 14px;
+        padding: 0.85rem 1.1rem;
+        margin-bottom: 0.6rem;
+        background-color: var(--bg-elevated) !important;
+        border: 1px solid var(--border-subtle);
     }
 
     /* ---- Tool call badge ---- */
     .tool-badge {
         display: inline-flex; align-items: center; gap: 6px;
-        background: linear-gradient(135deg, #1f2937, #111827);
-        border: 1px solid #374151; border-radius: 20px;
-        padding: 6px 14px; margin: 4px 2px; font-size: 0.82rem;
-        color: #9ca3af; font-family: 'Segoe UI', system-ui, sans-serif;
+        background: linear-gradient(135deg, rgba(232,185,95,0.14), rgba(124,108,246,0.10));
+        border: 1px solid rgba(232,185,95,0.35); border-radius: 20px;
+        padding: 6px 14px; margin: 4px 4px 4px 0; font-size: 0.8rem;
+        color: var(--accent-gold); font-weight: 500;
     }
     .tool-badge .icon { font-size: 1rem; }
-    .tool-badge .name { color: #d1d5db; font-weight: 500; }
+    .tool-badge .name { color: var(--text-primary); font-weight: 600; }
 
     /* ---- Document info card ---- */
     .doc-card {
-        background: linear-gradient(135deg, #1a2332, #162032);
-        border: 1px solid #1e3a5f; border-radius: 12px;
-        padding: 16px 20px; margin: 8px 0; color: #c9d1d9;
+        background: linear-gradient(135deg, rgba(124,108,246,0.12), rgba(23,26,39,0.9));
+        border: 1px solid rgba(124,108,246,0.35); border-radius: 14px;
+        padding: 16px 20px; margin: 10px 0; color: var(--text-primary);
+        backdrop-filter: blur(6px);
     }
-    .doc-card h4 { margin: 0 0 8px 0; color: #58a6ff; font-size: 0.95rem; }
+    .doc-card h4 { margin: 0 0 8px 0; color: var(--accent-secondary); font-size: 0.95rem; font-weight: 700; }
     .doc-card .stat {
         display: inline-block; margin-right: 16px;
-        font-size: 0.85rem; color: #8b949e;
+        font-size: 0.85rem; color: var(--text-secondary);
     }
-    .doc-card .stat strong { color: #c9d1d9; }
+    .doc-card .stat strong { color: var(--text-primary); }
 
     /* ---- Header area ---- */
     .header-area {
-        background: linear-gradient(135deg, #161b22, #0d1117);
-        border: 1px solid #30363d; border-radius: 16px;
-        padding: 24px 32px; margin-bottom: 20px; text-align: center;
+        background: linear-gradient(135deg, #171a2c 0%, #0d0f1a 100%);
+        border: 1px solid var(--border-subtle); border-radius: 20px;
+        padding: 32px 36px; margin-bottom: 24px; text-align: center;
+        box-shadow: 0 8px 32px rgba(124,108,246,0.08);
     }
-    .header-area h1 { margin: 0; color: #f0f6fc; font-size: 1.8rem; }
-    .header-area p { margin: 6px 0 0; color: #8b949e; font-size: 0.95rem; }
+    .header-area h1 {
+        margin: 0; font-family: 'Sora', sans-serif;
+        background: linear-gradient(135deg, #ffffff, var(--accent-secondary));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        font-size: 2rem; font-weight: 700;
+    }
+    .header-area p { margin: 8px 0 0; color: var(--text-secondary); font-size: 0.98rem; }
 
     /* ---- Feature pills ---- */
     .feature-pill {
-        display: inline-block; background-color: #21262d;
-        border: 1px solid #30363d; border-radius: 16px;
-        padding: 4px 12px; margin: 3px; font-size: 0.78rem; color: #8b949e;
+        display: inline-block; background-color: var(--bg-elevated);
+        border: 1px solid var(--border-subtle); border-radius: 18px;
+        padding: 5px 14px; margin: 4px; font-size: 0.8rem; color: var(--text-secondary);
+        font-weight: 500;
     }
 
     /* ---- Empty state ---- */
-    .empty-state { text-align: center; padding: 60px 20px; color: #484f58; }
-    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-    .empty-state h3 { color: #8b949e; margin-bottom: 8px; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.6; }
+    .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
     .empty-state p { font-size: 0.9rem; }
+
+    /* ---- Chat input ---- */
+    [data-testid="stChatInput"] {
+        border-radius: 14px;
+        border: 1px solid var(--border-subtle);
+        background-color: var(--bg-elevated);
+    }
+
+    /* ---- Divider ---- */
+    hr, .stMarkdown hr { border-color: var(--border-subtle) !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -119,9 +166,36 @@ def add_thread(thread_id):
         st.session_state["chat_threads"].append(thread_id)
 
 
-def load_conversation(thread_id):
-    state = chatbot.get_state(config={"configurable": {"thread_id": thread_id}})
-    return state.values.get("messages", [])
+def extract_text(content) -> str:
+    """
+    Normalize AIMessage/HumanMessage .content into plain, displayable text.
+
+    Some models (e.g. Gemini via langchain-google-genai) return content as a
+    list of content blocks instead of a plain string, e.g.:
+        [{'type': 'text', 'text': 'actual answer', 'extras': {'signature': '...'}}]
+    This pulls out just the human-readable text and drops signatures/metadata.
+    """
+    if content is None:
+        return ""
+
+    if isinstance(content, str):
+        return content.strip()
+
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                # Prefer explicit 'text' field; skip non-text blocks (e.g. tool_use, thinking, signatures)
+                if block.get("type") in (None, "text") and "text" in block:
+                    parts.append(block["text"])
+                elif "text" in block:
+                    parts.append(block["text"])
+        return "\n".join(p.strip() for p in parts if p and p.strip())
+
+    # Fallback: stringify anything unexpected rather than showing a raw repr
+    return str(content).strip()
 
 
 def format_tool_badge(tool_name):
@@ -154,7 +228,7 @@ with st.sidebar:
     st.markdown(
         '<div style="text-align:center; padding: 8px 0 16px;">'
         '<span style="font-size:1.4rem;">🤖</span> '
-        '<span style="font-size:1.1rem; font-weight:600; color:#f0f6fc;"> LangGraph Chat</span>'
+        '<span style="font-size:1.15rem; font-weight:700; color:#eef0f7; font-family:\'Sora\',sans-serif;"> LangGraph Chat</span>'
         "</div>",
         unsafe_allow_html=True,
     )
@@ -208,16 +282,18 @@ with st.sidebar:
             temp = []
             for msg in messages:
                 if isinstance(msg, HumanMessage):
-                    temp.append({"role": "user", "content": msg.content})
+                    temp.append({"role": "user", "content": extract_text(msg.content)})
                 elif isinstance(msg, AIMessage):
-                    temp.append({"role": "assistant", "content": msg.content})
+                    text = extract_text(msg.content)
+                    if text:
+                        temp.append({"role": "assistant", "content": text})
             st.session_state["message_history"] = temp
             st.session_state["doc_info"] = None
             st.rerun()
 
     st.markdown("---")
     st.markdown(
-        '<div style="padding: 8px 0; color: #484f58; font-size: 0.78rem;">'
+        '<div style="padding: 8px 0;">'
         '<span class="feature-pill">🧠 Gemini 2.5 Flash</span>'
         '<span class="feature-pill">🔍 Web Search</span>'
         '<span class="feature-pill">🧮 Calculator</span>'
@@ -230,13 +306,19 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+
+def load_conversation(thread_id):
+    state = chatbot.get_state(config={"configurable": {"thread_id": thread_id}})
+    return state.values.get("messages", [])
+
+
 # ============================================ Main Chat Area ========================================
 if not st.session_state["message_history"]:
     st.markdown(
         '<div class="header-area">'
-        "<h1>🤖 LangGraph AI Assistant</h1>"
+        "<h1>LangGraph AI Assistant</h1>"
         "<p>Your intelligent multi-tool chatbot powered by LangGraph</p>"
-        '<div style="margin-top: 12px;">'
+        '<div style="margin-top: 14px;">'
         '<span class="feature-pill">🔍 Web Search</span>'
         '<span class="feature-pill">🧮 Calculator</span>'
         '<span class="feature-pill">📈 Stock Prices</span>'
@@ -296,14 +378,16 @@ if prompt := st.chat_input("Type your message..."):
                         elif node_name == "chat_node" and "messages" in node_data:
                             for msg in node_data["messages"]:
                                 if isinstance(msg, AIMessage) and msg.content:
-                                    final_response = msg.content
+                                    text = extract_text(msg.content)
+                                    if text:
+                                        final_response = text
 
                 # Show tool usage badges
                 if tool_calls_display:
                     badges_html = "".join(format_tool_badge(t) for t in tool_calls_display)
                     st.markdown(
-                        f'<div style="margin-bottom: 8px;">'
-                        f'<span style="font-size: 0.78rem; color: #484f58; margin-right: 4px;">Tools used:</span>'
+                        f'<div style="margin-bottom: 10px;">'
+                        f'<span style="font-size: 0.78rem; color: #5c6178; margin-right: 6px;">Tools used:</span>'
                         f"{badges_html}"
                         f"</div>",
                         unsafe_allow_html=True,
