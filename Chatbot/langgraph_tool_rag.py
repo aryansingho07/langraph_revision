@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import sqlite3
 import tempfile
@@ -13,6 +14,7 @@ _env_path = Path(__file__).resolve().parent.parent / ".env"
 if _env_path.exists():
     load_dotenv(_env_path)
 
+
 # On Streamlit Cloud, read from st.secrets if GOOGLE_API_KEY not yet set
 def _ensure_api_key():
     if not os.environ.get("GOOGLE_API_KEY"):
@@ -22,20 +24,55 @@ def _ensure_api_key():
         except Exception:
             pass
 
+
 _ensure_api_key()
+
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.vectorstores import FAISS
 from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_mcp_adapters.client import MultiServerMCPClient
 import requests
 
+# -------------------
+# 0. Remote MCP server (self-built)
+# -------------------
+# NOTE: verify the exact path your server mounts the MCP endpoint on.
+# Many streamable-http MCP servers expose it at "/mcp", not the bare root "/".
+MCP_SERVERS = {
+    "expense_tracker": {
+        "transport": "streamable_http",  # fixed typo: was "streamble_http"
+        "url": "https://mcp-server-hcv0.onrender.com/mcp",  # confirm this path matches your server
+    }
+}
 
+
+async def _load_remote_tools():
+    """get_tools() is async, so it must be awaited inside an event loop."""
+    client = MultiServerMCPClient(MCP_SERVERS)  # positional arg, not servers=
+    return await client.get_tools()
+
+
+try:
+    remote_tools = asyncio.run(_load_remote_tools())
+except RuntimeError:
+    # Raised if this module is imported while an event loop is already running
+    # (e.g. some Streamlit/Jupyter/ASGI contexts). Fall back to no remote tools
+    # rather than crashing import; log so it's visible.
+    print("Warning: could not load remote MCP tools (event loop already running).")
+    remote_tools = []
+except Exception as e:
+    print(f"Warning: failed to load remote MCP tools: {e}")
+    remote_tools = []
+
+print(f"Loaded {len(remote_tools)} remote MCP tool(s): {[t.name for t in remote_tools]}")
 
 # -------------------
 # 1. LLM + embeddings
@@ -143,7 +180,7 @@ def calculator(first_num: float, second_num: float, operation: str) -> dict:
 @tool
 def get_stock_price(symbol: str) -> dict:
     """
-    Fetch latest stock price for a given symbol (e.g. 'AAPL', 'TSLA') 
+    Fetch latest stock price for a given symbol (e.g. 'AAPL', 'TSLA')
     using Alpha Vantage with API key in the URL.
     """
     url = (
@@ -179,8 +216,10 @@ def rag_tool(query: str, thread_id: Optional[str] = None) -> dict:
     }
 
 
-tools = [search_tool, get_stock_price, calculator, rag_tool]
+# Flatten remote_tools into the main tools list (it's already a list of tool objects)
+tools = [search_tool, get_stock_price, calculator, rag_tool, *remote_tools]
 llm_with_tools = llm.bind_tools(tools)
+
 
 # -------------------
 # 4. State
@@ -202,9 +241,9 @@ def chat_node(state: ChatState, config=None):
         content=(
             "You are a helpful assistant. For questions about the uploaded PDF, call "
             "the `rag_tool` and include the thread_id "
-            f"`{thread_id}`. You can also use the web search, stock price, and "
-            "calculator tools when helpful. If no document is available, ask the user "
-            "to upload a PDF."
+            f"`{thread_id}`. You can also use the web search, stock price, "
+            "calculator, and expense tracker tools when helpful. If no document is "
+            "available, ask the user to upload a PDF."
         )
     )
 
@@ -233,6 +272,7 @@ graph.add_conditional_edges("chat_node", tools_condition)
 graph.add_edge("tools", "chat_node")
 
 chatbot = graph.compile(checkpointer=checkpointer)
+
 
 # -------------------
 # 8. Helpers
